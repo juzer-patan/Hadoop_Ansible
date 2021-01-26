@@ -1,0 +1,30 @@
+- hosts : master_hadoop
+  vars_prompt:
+  -  name : master_ip
+     prompt : 'Enter master ip'
+     private : no
+  -  name : port
+     prompt : 'Enter port'
+     private : no
+  -  name : namedir
+     prompt : 'Enter namenode directory path'
+     private : no
+   
+
+  roles :
+          - hadoop_master
+- hosts : slave_hadoop
+  vars_prompt:
+  -  name : master_ip
+     prompt : 'Enter master ip'
+     private : no
+  -  name : port
+     prompt : 'Enter port'
+     private : no
+  -  name : datadir
+     prompt : 'Enter datanote directory path'
+     private : no
+
+  roles :
+          - hadoop_data  
+    

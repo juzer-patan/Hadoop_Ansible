@@ -1,0 +1,42 @@
+---
+# tasks file for hadoop_master
+- name: Create a directory if it does not exist
+  file:
+    path: /soft
+    state: directory
+    mode: '0755'       
+- name: Copy jdk  rpm
+  copy:
+    src : 'jdk-8u171-linux-x64.rpm' 
+    dest : '/soft/'
+- name: installing jdk
+  yum: # module used to maintain packages in redhat 
+    name: '/soft/jdk-8u171-linux-x64.rpm' # if we give the name of local file it will installed that rather than searching on internet
+    state: present
+    disable_gpg_check: yes
+- name: Copy hadoop rpm
+  copy:
+    src : 'hadoop-1.2.1-1.x86_64.rpm'
+    dest : '/soft/'
+  register : x 
+- name : Install Hadoop
+  command : "rpm -ivf /soft/hadoop-1.2.1-1.x86_64.rpm --force"
+  when : x.changed == true
+- name: Create datanode directory
+  file:
+    path: "{{  datadir  }}"
+    state: directory
+    mode: '0755'
+- name: Copy hdfs-site file
+  template:
+    src : 'hdfs-site.xml'
+    dest : '/etc/hadoop/'
+  register : hdfs_change
+- name: Copy core-site file
+  template:
+    src : 'core-site.xml'
+    dest : '/etc/hadoop/'
+- name : Starting service 
+  command : "hadoop-daemon.sh start datanode"  
+- debug :
+    var : x.changed
